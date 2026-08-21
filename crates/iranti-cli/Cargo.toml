@@ -1,0 +1,16 @@
+[package]
+name = "iranti-cli"
+version.workspace = true
+edition.workspace = true
+description = "Iranti CLI: the agent-first memory mesh command surface"
+
+[[bin]]
+name = "iranti"
+path = "src/main.rs"
+
+[dependencies]
+iranti-core = { path = "../iranti-core" }
+clap.workspace = true
+anyhow.workspace = true
+serde_json.workspace = true
+nostr.workspace = true

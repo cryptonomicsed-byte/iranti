@@ -1,0 +1,21 @@
+{
+  "name": "iranti-mcp",
+  "version": "0.1.0",
+  "description": "MCP server exposing the Iranti memory mesh as discoverable agent tools (Buzz NIP-AE companion)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "smoke": "node smoke.mjs",
+    "e2e": "node e2e.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

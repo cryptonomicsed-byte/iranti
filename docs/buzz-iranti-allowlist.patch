@@ -1,0 +1,66 @@
+diff --git a/crates/buzz-core/src/kind.rs b/crates/buzz-core/src/kind.rs
+index b1be7c5..fafce75 100644
+--- a/crates/buzz-core/src/kind.rs
++++ b/crates/buzz-core/src/kind.rs
+@@ -108,6 +108,34 @@ pub const KIND_EVENT_REMINDER: u32 = 30300;
+ /// dedicated push lease tables.
+ pub const KIND_PUSH_LEASE: u32 = 30350;
+ 
++/// NIP-IR: Iranti recall index manifest (parameterized replaceable, agent-authored).
++///
++/// Public, non-leaking metadata for an agent's memory namespaces: entry
++/// counts, pin sets, coarse term fingerprints (top-k terms, no content).
++/// Enables recall indexing services without revealing memory content.
++/// See `docs/nips/NIP-IR.md`.
++pub const KIND_RECALL_INDEX: u32 = 36000;
++
++/// NIP-IR: Iranti A2A memory grant (parameterized replaceable, grantor-authored).
++///
++/// `d = <grantee>:<grantor>:<namespace>`. Grants the grantee read access to
++/// the grantor's namespace. Grantors SHOULD also mark the matching memory
++/// namespace public via the recall index so the grantee can discover it.
++/// See `docs/nips/NIP-IR.md`.
++pub const KIND_MEMORY_GRANT: u32 = 36001;
++
++/// NIP-IR: Iranti dream digest (parameterized replaceable, agent-authored).
++///
++/// Daily reflection over an agent's memory: namespace stats, top terms,
++/// salience, drift vs the previous period. See `docs/nips/NIP-IR.md`.
++pub const KIND_DREAM_DIGEST: u32 = 36002;
++
++/// NIP-IR: Iranti echo report (parameterized replaceable, agent-authored).
++///
++/// Cross-agent resonance findings from the hive (shared concepts, drift).
++/// See `docs/nips/NIP-IR.md`.
++pub const KIND_ECHO_REPORT: u32 = 36003;
++
+ /// Kinds whose stored events are readable only by their author.
+ ///
+ /// The relay must never reveal the existence, count, tags, content, schedule,
+diff --git a/crates/buzz-relay/src/handlers/ingest.rs b/crates/buzz-relay/src/handlers/ingest.rs
+index fcd0d70..220d4e5 100644
+--- a/crates/buzz-relay/src/handlers/ingest.rs
++++ b/crates/buzz-relay/src/handlers/ingest.rs
+@@ -34,6 +34,7 @@ use buzz_core::kind::{
+     KIND_STREAM_MESSAGE_V2, KIND_STREAM_REMINDER, KIND_TEAM, KIND_TEAM_CATALOG, KIND_TEXT_NOTE,
+     KIND_USER_STATUS, KIND_WORKFLOW_DEF, KIND_WORKFLOW_TRIGGER, RELAY_ADMIN_ADD_MEMBER,
+     RELAY_ADMIN_CHANGE_ROLE, RELAY_ADMIN_REMOVE_MEMBER, RELAY_ADMIN_SET_WORKSPACE_PROFILE,
++    KIND_RECALL_INDEX, KIND_MEMORY_GRANT, KIND_DREAM_DIGEST, KIND_ECHO_REPORT,
+ };
+ use buzz_core::tenant::TenantContext;
+ use buzz_core::verification::verify_event;
+@@ -214,7 +215,13 @@ fn required_scope_for_kind(kind: u32, event: &Event) -> Result<Scope, &'static s
+         KIND_TEXT_NOTE | KIND_LONG_FORM => Ok(Scope::MessagesWrite),
+         KIND_CONTACT_LIST | KIND_READ_STATE | KIND_USER_STATUS | KIND_AGENT_ENGRAM
+         | KIND_EVENT_REMINDER | KIND_PERSONA | KIND_TEAM | KIND_MANAGED_AGENT
+-        | KIND_TEAM_CATALOG | super::push_lease::KIND_PUSH_LEASE => {
++        | KIND_TEAM_CATALOG | super::push_lease::KIND_PUSH_LEASE
++        // NIP-IR: agent-authored memory mesh events (recall index, A2A grants,
++        // dream digests, echo reports) — same ownership shape as kind:30174.
++        | KIND_RECALL_INDEX
++        | KIND_MEMORY_GRANT
++        | KIND_DREAM_DIGEST
++        | KIND_ECHO_REPORT => {
+             Ok(Scope::UsersWrite)
+         }
+         // NIP-AM: agent turn metrics are agent-authored global events (encrypted to owner).

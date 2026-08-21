@@ -1,0 +1,17 @@
+[package]
+name = "iranti-core"
+version.workspace = true
+edition.workspace = true
+description = "Iranti core: sovereign agent memory mesh for Buzz (NIP-AE companion)"
+
+[dependencies]
+nostr.workspace = true
+rusqlite.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+hmac.workspace = true
+sha2.workspace = true
+hex.workspace = true
+anyhow.workspace = true
+reqwest.workspace = true
+rand.workspace = true
