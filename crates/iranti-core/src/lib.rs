@@ -19,6 +19,7 @@ pub mod dream;
 pub mod export;
 pub mod recall;
 pub mod store;
+pub mod vantage;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 

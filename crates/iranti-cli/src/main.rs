@@ -161,6 +161,24 @@ enum Cmd {
         #[arg(long, default_value_t = 38400)]
         port: u16,
     },
+    /// Vantage bridge: mirror memories into a Vantage agent's memory vault
+    /// via its external-connector ingest endpoint. Iranti stays the source
+    /// of truth; each pushed memory's `prov` is set to the resulting
+    /// vantage:// note path.
+    VantagePush {
+        #[arg(long)]
+        agent: String,
+        /// Vantage backend base URL, e.g. https://vantage.example.com
+        #[arg(long)]
+        vantage_url: String,
+        /// vconn_... connector token from
+        /// POST /api/agents/{name}/vault/external/connectors (source=iranti)
+        #[arg(long)]
+        token: String,
+        /// Only push this namespace; omit to push all namespaces.
+        #[arg(long)]
+        ns: Option<String>,
+    },
 }
 
 #[derive(Subcommand)]
@@ -395,6 +413,12 @@ fn main() -> Result<()> {
                 println!("pulled {up} engrams (tombstones: {tomb}) from {relay}");
             }
         },
+        Cmd::VantagePush { agent, vantage_url, token, ns } => {
+            let a = store.resolve_agent(&agent)?;
+            let client = iranti_core::vantage::VantageClient::new(&vantage_url, &token)?;
+            let n = iranti_core::vantage::push(&store, &client, &a, ns.as_deref())?;
+            println!("pushed {n} memories to Vantage vault at {vantage_url}");
+        }
         Cmd::Daemon { port } => {
             daemon::serve(store, port)?;
         }
