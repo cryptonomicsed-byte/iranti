@@ -126,7 +126,7 @@ enum Cmd {
         #[arg(long)]
         json: bool,
     },
-    /// Hive resonance: cross-agent echo detection (Python Ọ̀ṣun layer).
+    /// Hive resonance: cross-agent echo detection (Python).
     Echo {
         agents: Vec<String>,
         #[arg(long)]
