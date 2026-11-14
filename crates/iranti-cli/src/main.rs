@@ -151,7 +151,7 @@ enum Cmd {
         #[arg(long)]
         out: Option<PathBuf>,
     },
-    /// Buzz bridge: import channel history / sync engrams via relay HTTP.
+    /// Relay bridge: import channel history / sync engrams (wss:// standard relay, or https:// Buzz).
     Bridge {
         #[command(subcommand)]
         sub: BridgeCmd,

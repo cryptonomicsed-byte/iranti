@@ -91,8 +91,9 @@ Key design decisions:
   domain, same NIP-44 v2 conversation key, same `p`-tag owner). Verified by
   tests in `crates/iranti-core/src/crypto.rs`.
 - **Local-first, relay-optional**: the SQLite store is the source of truth;
-  `bridge push/pull/import` syncs with any Buzz relay over HTTP (no WS
-  client needed).
+  `bridge push/pull/import` syncs with a relay. Give a `wss://` / `ws://`
+  URL for a standard Nostr relay (NIP-01 over WebSocket, with NIP-42 auth
+  when the relay asks), or an `https://` URL for a Buzz relay's HTTP surface.
 - **Everything is a tool**: CLI parity + MCP tools + A2A RPC — three surfaces,
   one core.
 - **Consent by default**: no cross-agent recall without an explicit grant;
